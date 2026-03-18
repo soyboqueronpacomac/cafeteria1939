@@ -15,7 +15,8 @@ import { Picture } from 'astro:assets';
         alt="Imagen de la cafetería"
         width={width}
         height={height}
-        class="w-full h-auto rounded-lg object-cover lg:-skew-y-2 shadow-lg"
+        class="w-full h-auto rounded-lg object-cover lg:-skew-y-2 shadow-2xl"
+        formats={['avif', 'webp', 'jpeg']}
     />
     <div class="text-xl text-coffee-800 space-y-3 mt-10 lg:mt-0" set:html={content}></div>
 </section>
