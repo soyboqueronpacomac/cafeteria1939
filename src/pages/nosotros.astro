@@ -1,6 +1,7 @@
 ---
 import { getWPPageBySlug } from '@/lib/wp';
 import Layout from '@/layouts/Layout.astro';
+import Aboutcontent from '@/components/nosotros/Aboutcontent.astro';
 
 const data = await getWPPageBySlug('nosotros');
 
@@ -11,6 +12,10 @@ if (!data) {
 const title = data.title.rendered
 const subtitle = data.acf.subtitle
 const bgImage = data.featured_images?.full.url!
+const image = data.featured_images?.medium_large.url!
+const content = data.content.rendered
+const width = data.featured_images?.medium_large.width!
+const height = data.featured_images?.medium_large.height!
 ---
 
 <Layout
@@ -18,6 +23,5 @@ const bgImage = data.featured_images?.full.url!
   subtitle={subtitle}
   bgImage={bgImage}
 >
-	<h1 class="text-4xl font-black text-coffee-500">{title}</h1>
-	<h2>{subtitle}</h2>
+	<Aboutcontent content={content} image={image} width={width} height={height} />
 </Layout>

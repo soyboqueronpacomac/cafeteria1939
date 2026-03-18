@@ -7,7 +7,7 @@ const { class: className, title } = Astro.props;
 ---
 
 <main class:list={[className]}>
-    <header>
+    <header class="mb-10">
         <h2 class="text-coffee-900 block text-4xl font-black uppercase text-center after:coffee-icon">{title}</h2>
     </header>
     <slot />
