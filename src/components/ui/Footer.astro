@@ -1,7 +1,26 @@
 ---
-
+    import FooterBox from "@/components/ui/footer/FooterBox.astro";
+    import Whatsapp from "@/assets/whatsapp.svg";
 ---
 
-<footer>
-    footer
+<footer class="bg-coffee-900 mt-7 pt-20">
+    <section class="max-w-7xl mx-4 lg:mx-auto mt-10 grid grid-cols-1 lg:grid-cols-3 gap-5">
+        <FooterBox heading="Ubicación">
+            <p>Coffee Street 39</p>
+            <p>Londres, UK</p>
+        </FooterBox>
+        <FooterBox heading="Reserva">
+            <p>¿Quieres reservar una mesa?</p>
+            <a href="https://wa.me/1234567890" target="_blank" rel="noopener noreferrer" class="flex items-center justify-center gap-2 text-white text-center">
+                <Whatsapp  class="w-6 h-6" />
+                envia un whatsapp
+            </a>
+        </FooterBox>
+        <FooterBox heading="Horario">
+            <p>Lunes a Jueves: 11:00 - 22:00</p>
+            <p>Viernes y Sábado: 11:00 - 24:00</p>
+            <p>Domingo: Cerrado</p>
+        </FooterBox>
+    </section>
+    <p class="py-10 text-center text-white text-sm">Todos los derechos reservados. La Cafeteria1939.  © {new Date().getFullYear()}</p>
 </footer>
