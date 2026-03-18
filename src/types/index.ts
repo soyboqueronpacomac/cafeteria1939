@@ -19,6 +19,9 @@ export const BaseWPSchema = z.object({
     title: z.object({
         rendered: z.string()
     }),
+    content: z.object({
+        rendered: z.string()
+    }),
     acf: z.object({
         subtitle: z.string()
     }),

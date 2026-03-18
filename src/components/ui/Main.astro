@@ -1,10 +1,14 @@
 ---
 interface Props {
     class?: string;
+    title: string;
 }
-const { class: className } = Astro.props;
+const { class: className, title } = Astro.props;
 ---
 
 <main class:list={[className]}>
+    <header>
+        <h2 class="text-coffee-900 block text-4xl font-black uppercase text-center after:coffee-icon">{title}</h2>
+    </header>
     <slot />
 </main>

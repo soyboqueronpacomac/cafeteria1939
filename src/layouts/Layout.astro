@@ -16,6 +16,7 @@ const { title, subtitle, bgImage } = Astro.props;
 	<head>
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width" />
+		<meta name="description" content={subtitle} />
 		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 		<link rel="icon" href="/favicon.ico" />
 		<title>Cafetería desde 1939: {title}</title>
@@ -31,7 +32,7 @@ const { title, subtitle, bgImage } = Astro.props;
 			bgImage={bgImage}
 			subtitle={subtitle}
 		 />
-		 <Main class="bg-white p-20 -mt-20 mx-4 lg:mx-auto max-w-7xl relative rounded-xl shadow-2xl">
+		 <Main title={title} class="bg-white p-20 -mt-20 mx-4 lg:mx-auto max-w-7xl relative rounded-xl shadow-2xl">
 			<slot />
 		 </Main>
 		<Footer />
