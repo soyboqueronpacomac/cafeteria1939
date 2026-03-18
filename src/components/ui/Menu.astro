@@ -1,0 +1,29 @@
+---
+import { navigation } from "../../config/navigation";
+
+const pathname = new URL(Astro.request.url).pathname;
+const currentPath = pathname.endsWith('/') ? pathname : `${pathname}/`;
+---
+
+<nav>
+    <ul class="flex flex-col lg:flex-row justify-center gap-6 lg:gap-8 text-center lg:text-left">
+        {
+            navigation.map((item) => {
+                const isActive = currentPath === item.href;
+                return (
+                    <li>
+                        <a
+                            href={item.href}
+                            class:list={[
+                                "transition-colors font-medium text-lg uppercase tracking-wider",
+                                isActive ? "text-coffee-300 pointer-events-none" : "text-white hover:text-coffee-300"
+                            ]}
+                        >
+                            {item.name}
+                        </a>
+                    </li>
+                )
+            })
+        }
+    </ul>
+</nav>
