@@ -1,5 +1,6 @@
 ---
 import { getWPPageBySlug } from '../lib/wp';
+import LIstIcons from '@/components/home/LIstIcons.astro';
 import Layout from '../layouts/Layout.astro';
 
 const data = await getWPPageBySlug('inicio');
@@ -19,6 +20,7 @@ const content = data.content.rendered
   subtitle={subtitle}
   bgImage={bgImage}
 >
-	<div class="space-y-4 text-center text-lg mt-10" set:html={content}></div>
+	<div class="space-y-4 text-center text-coffee-800 text-lg mt-10" set:html={content}></div>
+	<LIstIcons />
 
 </Layout>

@@ -27,3 +27,7 @@
     display: block;
     margin-inline: auto;
 }
+
+@utility secondary-family {
+    font-family: "PT Sans", sans-serif;
+}
