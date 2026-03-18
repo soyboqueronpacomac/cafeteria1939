@@ -2,6 +2,7 @@
 import "../styles/global.css";
 import Header from "../components/ui/header.astro";
 import Footer from "../components/ui/Footer.astro";
+import Main from "../components/ui/Main.astro";
 interface Props {
 	title: string;
 	subtitle: string;
@@ -30,7 +31,9 @@ const { title, subtitle, bgImage } = Astro.props;
 			bgImage={bgImage}
 			subtitle={subtitle}
 		 />
-		<slot />
+		 <Main class="bg-white p-20 lg:-mt-20 relative rounded-xl shadow-2xl">
+			<slot />
+		 </Main>
 		<Footer />
 	</body>
 </html>
