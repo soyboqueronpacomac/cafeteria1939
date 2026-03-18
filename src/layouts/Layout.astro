@@ -4,9 +4,10 @@ import Header from "../components/ui/header.astro";
 import Footer from "../components/ui/Footer.astro";
 interface Props {
 	title: string;
+	subtitle: string;
 	bgImage: string;
 }
-const { title, bgImage } = Astro.props;
+const { title, subtitle, bgImage } = Astro.props;
 ---
 
 <!doctype html>
@@ -27,6 +28,7 @@ const { title, bgImage } = Astro.props;
 	<body class="bg-coffee-100">
 		<Header
 			bgImage={bgImage}
+			subtitle={subtitle}
 		 />
 		<slot />
 		<Footer />
