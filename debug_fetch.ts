@@ -1,7 +1,7 @@
 import { env } from './src/config/envs';
 
 const { API_URL } = env;
-const url = `${API_URL}/pages?slug=inicio&_embed`;
+const url = `${API_URL}/pages?slug=nosotros&_embed`;
 
 console.log(`Fetching from: ${url}`);
 
