@@ -7,6 +7,11 @@ import { formatDate } from '@/lib/formatter';
 import { getWPPostBySlug } from '@/lib/wp';
 export const prerender = false
 const { slug } = Astro.params
+
+if (!slug) {
+  return Astro.redirect('/404');
+}
+
 const post = await getWPPostBySlug(slug)
 
 if (!post) {
