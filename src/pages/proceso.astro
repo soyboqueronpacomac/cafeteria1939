@@ -1,16 +1,24 @@
 ---
 import { getWPPageBySlug } from '@/lib/wp';
 import Layout from '@/layouts/Layout.astro';
+import { ProcessPageSchema } from '@/types';
+import { inferRemoteSize } from 'astro:assets';
+import { Picture } from 'astro:assets';
 
-const data = await getWPPageBySlug('proceso');
+const data = await getWPPageBySlug('proceso', ProcessPageSchema);
 
 if (!data) {
   return Astro.redirect('/404');
 }
+const processKeys = Array.from({ length: 5}, (_, i) => `process_${i + 1}`)
+
 
 const title = data.title.rendered
 const subtitle = data.acf.subtitle
 const bgImage = data.featured_images?.full.url!
+const content = data.content.rendered
+
+
 ---
 
 <Layout
@@ -18,6 +26,76 @@ const bgImage = data.featured_images?.full.url!
   subtitle={subtitle}
   bgImage={bgImage}
 >
-	<h1 class="text-4xl font-black text-coffee-500">{title}</h1>
-	<h2>{subtitle}</h2>
+	<div class="opacity-0 text-xl text-coffee-800 space-y-3 mt-10 lg:mt-0 js-scroll-fade-right" set:html={content}></div>
+  <section class="mt-10 space-y-10">
+    {processKeys.map(async (key, i) => {
+      const { title, description, image } = data.acf[key];
+      //Para obtener el width y height de la imagen
+      const { width, height } = await inferRemoteSize(image);
+      console.log(i);
+      
+      
+      return (
+        <article class="flex flex-col lg:flex-row lg:items-center gap-10 bg-coffee-100 p-10 rounded-lg shadow-2xl">
+          <div class={`w-full lg:w-1/2 ${i % 2 === 0 ? 'lg:order-1' : 'lg:order-2'} opacity-0 js-scroll-fade-left`}>
+            <Picture
+              src={image}
+              alt={`Imagen del proceso ${title}`}
+              width={width}
+              height={height}
+              class="w-full h-auto rounded-lg object-cover shadow-2xl js-scroll-tilt"
+              formats={['avif', 'webp', 'jpeg']}
+            />
+          </div>
+          <header class={`w-full lg:w-1/2 ${i % 2 === 0 ? 'lg:order-2' : 'lg:order-1'} opacity-0 js-scroll-fade-right`}>
+            <h3 class="text-coffee-900 font-black text-4xl pb-10 uppercase">{title}</h3>
+            <p class="text-lg text-coffee-700">{description}</p>
+          </header>
+        </article>
+      )
+    })}
+  </section>
 </Layout>
+
+<script>
+    document.addEventListener('astro:page-load', () => {
+        setupIntersectionObserver();
+    });
+
+    // Run also on initial load if ViewTransitions are not used or for the first visit
+    setupIntersectionObserver();
+
+    function setupIntersectionObserver() {
+        const observerOptions = {
+            root: null,
+            rootMargin: '0px',
+            threshold: 0.1
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    if (entry.target.classList.contains('js-scroll-fade-left')) {
+                        entry.target.classList.remove('opacity-0');
+                        entry.target.classList.add('animate-slide-in-left');
+                    }
+                    if (entry.target.classList.contains('js-scroll-fade-right')) {
+                        entry.target.classList.remove('opacity-0');
+                        entry.target.classList.add('animate-slide-in-right');
+                    }
+                    if (entry.target.classList.contains('js-scroll-fade-up')) {
+                        entry.target.classList.remove('opacity-0');
+                        entry.target.classList.add('animate-slide-in-up');
+                    }
+                } else {
+                    // Remove classes to re-trigger animation when scrolling back
+                    entry.target.classList.remove('animate-slide-in-left', 'animate-slide-in-right', 'animate-slide-in-up');
+                    entry.target.classList.add('opacity-0');
+                }
+            });
+        }, observerOptions);
+
+        const fadeElements = document.querySelectorAll('.js-scroll-fade-left, .js-scroll-fade-right, .js-scroll-fade-up');
+        fadeElements.forEach(el => observer.observe(el));
+    }
+</script>
