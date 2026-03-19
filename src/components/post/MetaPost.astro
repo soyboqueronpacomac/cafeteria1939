@@ -1,0 +1,10 @@
+---
+import { formatDate } from "@/lib/formatter";
+import type { Post } from "@/types";
+
+interface Props {
+    post: Post
+}
+const { post } = Astro.props;
+---
+<p class="text-coffee-500 text-sm font-semibold">{formatDate(post.date)}</p>

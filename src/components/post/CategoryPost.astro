@@ -1,0 +1,21 @@
+---
+import type { Post, CategoryDetail } from "@/types";
+
+interface Props {
+    post: Post;
+}
+const { post } = Astro.props;
+---
+
+<div class="flex gap-2">
+    {
+        post.category_details?.map(({ name, slug }: CategoryDetail) => (
+            <a
+                href={`/category/${slug}`}
+                class="bg-coffee-100 text-coffee-700 text-xs px-2 py-1 rounded-full font-medium hover:bg-coffee-200 transition-colors uppercase"
+            >
+                {name}
+            </a>
+        ))
+    }
+</div>

@@ -1,0 +1,18 @@
+---
+import type { Post } from "@/types";
+import { Picture } from "astro:assets";
+
+interface Props {
+    post: Post;
+}
+const { post } = Astro.props;
+---
+
+<Picture
+    src={post.featured_images?.full.url}
+    alt={post.title.rendered}
+    width={post.featured_images.medium_large.width}
+    height={post.featured_images.medium_large.height}
+    class="w-full h-auto object-cover rounded-lg group-hover:scale-105 transition-transform duration-300"
+    formats={["avif", "webp", "jpeg"]}
+/>

@@ -1,0 +1,33 @@
+---
+import CategoryPost from '@/components/post/CategoryPost.astro';
+import ImagePost from '@/components/post/ImagePost.astro';
+import MetaPost from '@/components/post/MetaPost.astro';
+import Layout from '@/layouts/Layout.astro';
+import { formatDate } from '@/lib/formatter';
+import { getWPPostBySlug } from '@/lib/wp';
+export const prerender = false
+const { slug } = Astro.params
+const post = await getWPPostBySlug(slug)
+
+if (!post) {
+  return Astro.redirect('/404');
+}
+console.log(post);
+
+const title = post.title.rendered
+const bgImage = post.featured_images?.full.url!
+
+
+---
+<Layout
+  title={title}
+  subtitle={title}
+  bgImage={bgImage}
+>
+    <article class="space-y-5 max-w-4xl mx-auto bg-white p-10 rounded-lg shadow-2xl">
+        <MetaPost post={post} />
+        <CategoryPost post={post} />
+        <ImagePost post={post} />
+        <div class="text-xl text-coffee-800 space-y-3 mt-10" set:html={post.content.rendered}></div>
+    </article>
+</Layout>

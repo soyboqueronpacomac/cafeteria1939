@@ -16,6 +16,7 @@ const featuredImageSchema = z.object({
 
 export const BaseWPSchema = z.object({
     id: z.number(),
+    slug: z.string(),
     date: z.string(),
     title: z.object({
         rendered: z.string()
@@ -48,7 +49,7 @@ const CategorySchema = z.object({
     name: z.string(),
     slug: z.string(),
 })
-
+export type CategoryDetail = z.infer<typeof CategorySchema>;
 const CategoriesSchema = z.array(CategorySchema)
 
 // Para obtener lo Post
