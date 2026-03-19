@@ -1,0 +1,20 @@
+---
+import { getWPPosts } from "@/lib/wp";
+import CardPost from "./CardPost.astro";
+
+    const posts = await getWPPosts()
+    //const imagen = posts?.[0]?.featured_images?.full?.url ?? "";
+    
+---
+
+<section >
+    <h2 class="text-coffee-900 text-6xl font-black mt-10">Todo los Posts</h2>
+    <section class="mt-10 grid grid-cols-1 gap-10">
+        {
+            posts.map(post => (
+                <CardPost post={post} />
+            ))
+        }
+    </section>
+
+</section>

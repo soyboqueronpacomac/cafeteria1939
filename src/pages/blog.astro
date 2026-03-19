@@ -1,5 +1,6 @@
 ---
 import { getWPPageBySlug } from '@/lib/wp';
+import ListPosts from '@/components/post/ListPosts.astro';
 import Layout from '@/layouts/Layout.astro';
 
 const data = await getWPPageBySlug('blog');
@@ -11,6 +12,7 @@ if (!data) {
 const title = data.title.rendered
 const subtitle = data.acf.subtitle
 const bgImage = data.featured_images?.full.url!
+const content = data.content.rendered
 ---
 
 <Layout
@@ -18,6 +20,6 @@ const bgImage = data.featured_images?.full.url!
   subtitle={subtitle}
   bgImage={bgImage}
 >
-	<h1 class="text-4xl font-black text-coffee-500">{title}</h1>
-	<h2>{subtitle}</h2>
+	<div class="text-xl text-coffee-800 space-y-3 mt-10 lg:mt-0" set:html={content}></div>
+  <ListPosts />
 </Layout>

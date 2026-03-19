@@ -1,5 +1,5 @@
 import { env } from '../config/envs';
-import { BaseWPSchema } from '../types';
+import { BaseWPSchema, PostsSchema } from '../types';
 
 export async function getWPPageBySlug(slug: string, schema = BaseWPSchema) {
     const { API_URL } = env;
@@ -21,6 +21,28 @@ export async function getWPPageBySlug(slug: string, schema = BaseWPSchema) {
         return schema.parse(json[0]);
     } catch (error) {
         console.error(`Error fetching WP page [${slug}]:`, error);
+        throw error;
+    }
+}
+export async function getWPPosts() {
+    const { API_URL } = env;
+    const url = `${API_URL}/posts?_embed&t=${Date.now()}`;
+    try {
+        const res = await fetch(url, { cache: 'no-store' });
+        
+        if (!res.ok) {
+            throw new Error(`Failed to fetch posts. Status: ${res.status}`);
+        }
+        
+        const json = await res.json();
+        
+        if (!json || json.length === 0) {
+            return null;
+        }
+
+        return PostsSchema.parse(json);
+    } catch (error) {
+        console.error(`Error fetching WP posts:`, error);
         throw error;
     }
 }
