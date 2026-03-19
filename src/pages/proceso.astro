@@ -26,7 +26,7 @@ const content = data.content.rendered
   subtitle={subtitle}
   bgImage={bgImage}
 >
-	<div class="opacity-0 text-xl text-coffee-800 space-y-3 mt-10 lg:mt-0 js-scroll-fade-right" set:html={content}></div>
+	<div class="opacity-0 text-xl text-coffee-800 space-y-3 mt-10 lg:mt-0 js-scroll-fade-right contenido-proceso" set:html={content}></div>
   <section class="mt-10 space-y-10">
     {processKeys.map(async (key, i) => {
       const { title, description, image } = data.acf[key];

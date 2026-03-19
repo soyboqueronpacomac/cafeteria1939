@@ -131,3 +131,41 @@
     animation: vintageTilt 5s ease-in-out forwards;
     transform-origin: center;
 }
+
+/* Procesos WordPress Content Fixes */
+.contenido-proceso img {
+    height: auto;
+    width: 100%;
+    max-width: 100%;
+    object-fit: cover;
+    border-radius: 0.5rem;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+.contenido-proceso .wp-block-columns {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+@media (min-width: 1024px) {
+    .contenido-proceso .wp-block-columns {
+        flex-direction: row;
+    }
+}
+
+.contenido-proceso .wp-block-column {
+    flex: 1;
+    min-width: 0; /* Evita desbordamiento en flex items */
+}
+
+/* Fix text overflow in titles */
+.contenido-proceso h1, 
+.contenido-proceso h2, 
+.contenido-proceso h3 {
+    width: 100%;
+    overflow-wrap: break-word;
+    word-break: break-word;
+    hyphens: auto;
+    line-height: 1.2;
+}
