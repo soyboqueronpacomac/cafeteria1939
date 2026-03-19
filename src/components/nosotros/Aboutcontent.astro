@@ -10,13 +10,69 @@ import { Picture } from 'astro:assets';
     const { content, image, width, height } = Astro.props;
 ---
 <section class="grid grid-cols-1 lg:grid-cols-2 gap-10 w-full">
-    <Picture
-        src={image}
-        alt="Imagen de la cafetería"
-        width={width}
-        height={height}
-        class="w-full h-auto rounded-lg object-cover lg:-skew-y-2 shadow-2xl"
-        formats={['avif', 'webp', 'jpeg']}
-    />
-    <div class="text-xl text-coffee-800 space-y-3 mt-10 lg:mt-0" set:html={content}></div>
+    <div class="w-full opacity-0 js-scroll-fade-left">
+        <div class="relative w-full rounded-lg shadow-2xl overflow-hidden vintage-vignette js-scroll-tilt">
+            <Picture
+                src={image}
+                alt="Imagen de la cafetería"
+                width={width}
+                height={height}
+                class="w-full h-auto object-cover block"
+                formats={['avif', 'webp', 'jpeg']}
+            />
+        </div>
+    </div>
+    <div class="opacity-0 text-xl text-coffee-800 space-y-3 mt-10 lg:mt-0 js-scroll-fade-right" set:html={content}></div>
 </section>
+
+<script>
+    document.addEventListener('astro:page-load', () => {
+        setupIntersectionObserver();
+    });
+
+    // Run also on initial load if ViewTransitions are not used or for the first visit
+    setupIntersectionObserver();
+
+    function setupIntersectionObserver() {
+        // Prevent multiple observers on the same elements if script runs multiple times
+        // cleanup existing observers if any (advanced, but for now simple check is enough)
+        
+        const observerOptions = {
+            root: null,
+            rootMargin: '0px',
+            threshold: 0.1
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    if (entry.target.classList.contains('js-scroll-fade-left')) {
+                        entry.target.classList.remove('opacity-0');
+                        entry.target.classList.add('animate-slide-in-left');
+                    }
+                    if (entry.target.classList.contains('js-scroll-fade-right')) {
+                        entry.target.classList.remove('opacity-0');
+                        entry.target.classList.add('animate-slide-in-right');
+                    }
+                    if (entry.target.classList.contains('js-scroll-tilt')) {
+                        entry.target.classList.add('animate-vintage-tilt');
+                    }
+                } else {
+                    // Remove classes to re-trigger animation when scrolling back
+                    entry.target.classList.remove('animate-slide-in-left', 'animate-slide-in-right', 'animate-vintage-tilt');
+                    if (!entry.target.classList.contains('js-scroll-tilt')) {
+                        entry.target.classList.add('opacity-0');
+                    }
+                }
+            });
+        }, observerOptions);
+
+        const leftElements = document.querySelectorAll('.js-scroll-fade-left');
+        const rightElements = document.querySelectorAll('.js-scroll-fade-right');
+        const tiltElements = document.querySelectorAll('.js-scroll-tilt');
+
+        leftElements.forEach(el => observer.observe(el));
+        rightElements.forEach(el => observer.observe(el));
+        tiltElements.forEach(el => observer.observe(el));
+    }
+</script>

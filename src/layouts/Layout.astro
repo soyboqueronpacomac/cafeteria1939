@@ -27,12 +27,12 @@ const { title, subtitle, bgImage } = Astro.props;
 			rel="stylesheet"
 		/>
 	</head>
-	<body class="bg-coffee-100">
+	<body class="bg-coffee-100 animate-fade-in">
 		<Header
 			bgImage={bgImage}
 			subtitle={subtitle}
 		 />
-		 <Main title={title} class="bg-white p-20 -mt-20 mx-4 lg:mx-auto max-w-7xl relative rounded-xl shadow-2xl">
+		 <Main title={title} class="bg-coffee-50 p-20 -mt-20 mx-4 lg:mx-auto max-w-7xl relative rounded-xl shadow-2xl">
 			<slot />
 		 </Main>
 		<Footer />

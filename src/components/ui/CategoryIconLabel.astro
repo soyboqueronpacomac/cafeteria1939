@@ -2,10 +2,12 @@
 interface Props {
     icon: string;
     label: string;
+    class?: string;
+    style?: string;
 }
-const { icon, label } = Astro.props;
+const { icon, label, class: className, style } = Astro.props;
 ---
-<article class="py-10 space-y-5 flex flex-col items-center secondary-family text-coffee-400">
+<article class:list={["py-10 space-y-5 flex flex-col items-center", className]} style={style}>
     <img src={icon} alt={label} />
     <h3>{label}</h3>
 </article>
