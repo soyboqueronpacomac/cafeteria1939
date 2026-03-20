@@ -11,7 +11,7 @@ const { post } = Astro.props;
     {
         post.category_details?.map(({ name, slug }: CategoryDetail) => (
             <a
-                href={`/category/${slug}`}
+                href={`/blog/categoria/${slug}`}
                 class="bg-coffee-100 text-coffee-700 text-xs px-2 py-1 rounded-full font-medium hover:bg-coffee-200 transition-colors uppercase"
             >
                 {name}

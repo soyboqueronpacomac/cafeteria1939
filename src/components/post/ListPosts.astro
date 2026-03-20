@@ -1,20 +1,34 @@
 ---
-import { getWPPosts } from "@/lib/wp";
+import type { Post } from "@/types";
 import CardPost from "./CardPost.astro";
 
-    const posts = await getWPPosts()
-    //const imagen = posts?.[0]?.featured_images?.full?.url ?? "";
-    
+interface Props {
+    title: string;
+    posts: Post[] | null;
+}
+const { title, posts } = Astro.props;
+
 ---
 
 <section >
-    <h2 class="text-coffee-900 text-6xl font-black mt-10">Todo los Posts</h2>
+    <h2 class="text-coffee-900 text-6xl font-black mt-10">{title}</h2>
     <section class="mt-10 grid grid-cols-1 gap-10">
         {
-            posts.map(post => (
-                <CardPost post={post} />
-            ))
+            posts && posts.length > 0 ? (
+                posts.map(post => (
+                    <CardPost post={post} />
+                ))
+            ) : (
+                <p class="text-coffee-700">No se encontraron artículos.</p>
+            )
         }
     </section>
-
 </section>
+
+<script>
+    import { setupIntersectionObserver } from '@/lib/animations';
+    document.addEventListener('astro:page-load', () => {
+        setupIntersectionObserver();
+    });
+    setupIntersectionObserver();
+</script>

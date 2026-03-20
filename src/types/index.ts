@@ -45,10 +45,12 @@ export const ProcessPageSchema = BaseWPSchema.extend({
     }).catchall(processSchema)
 })
 
-const CategorySchema = z.object({
+export const CategorySchema = z.object({
+    id: z.number().optional(),
     name: z.string(),
     slug: z.string(),
 })
+export const CategoriesSlugSchema = z.array(CategorySchema.pick({ slug: true }))
 export type CategoryDetail = z.infer<typeof CategorySchema>;
 const CategoriesSchema = z.array(CategorySchema)
 

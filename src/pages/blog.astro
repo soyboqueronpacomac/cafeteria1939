@@ -1,9 +1,10 @@
 ---
-import { getWPPageBySlug } from '@/lib/wp';
+import { getWPPageBySlug, getWPPosts } from '@/lib/wp';
 import ListPosts from '@/components/post/ListPosts.astro';
 import Layout from '@/layouts/Layout.astro';
 
 const data = await getWPPageBySlug('blog');
+const posts = await getWPPosts();
 
 if (!data) {
   return Astro.redirect('/404');
@@ -20,6 +21,14 @@ const content = data.content.rendered
   subtitle={subtitle}
   bgImage={bgImage}
 >
-	<div class="text-xl text-coffee-800 space-y-3 mt-10 lg:mt-0" set:html={content}></div>
-  <ListPosts />
+	<div class="text-xl text-coffee-800 space-y-3 mt-10 lg:mt-0 opacity-0 js-scroll-fade-up" set:html={content}></div>
+    <ListPosts title='Todos los post del blog' posts={posts}/>
 </Layout>
+
+<script>
+    import { setupIntersectionObserver } from '@/lib/animations';
+    document.addEventListener('astro:page-load', () => {
+        setupIntersectionObserver();
+    });
+    setupIntersectionObserver();
+</script>

@@ -8,14 +8,18 @@ import { getWPPostBySlug } from '@/lib/wp';
 export const prerender = false
 const { slug } = Astro.params
 
-if (!slug) {
-  return Astro.redirect('/404');
+if (!slug || slug === 'inicio') {
+  return Astro.redirect('/');
+}
+
+if (slug === 'post') {
+  return Astro.redirect('/blog');
 }
 
 const post = await getWPPostBySlug(slug)
 
 if (!post) {
-  return Astro.redirect('/404');
+  return Astro.redirect('/blog');
 }
 console.log(post);
 
@@ -29,10 +33,26 @@ const bgImage = post.featured_images?.full.url!
   subtitle={title}
   bgImage={bgImage}
 >
-    <article class="space-y-5 max-w-4xl mx-auto bg-white p-10 rounded-lg shadow-2xl">
-        <MetaPost post={post} />
-        <CategoryPost post={post} />
-        <ImagePost post={post} />
-        <div class="text-xl text-coffee-800 space-y-3 mt-10" set:html={post.content.rendered}></div>
-    </article>
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-10 items-start max-w-6xl mx-auto mt-10">
+        <div class="opacity-0 js-scroll-fade-left">
+            <div class="rounded-lg shadow-2xl overflow-hidden vintage-vignette">
+                <ImagePost post={post} />
+            </div>
+        </div>
+
+        <article class="space-y-5 bg-white p-10 rounded-lg shadow-2xl opacity-0 js-scroll-fade-right">
+            <MetaPost post={post} />
+            <CategoryPost post={post} />
+            <h1 class="text-4xl font-black text-coffee-900 border-b border-coffee-100 pb-4" set:html={title}></h1>
+            <div class="text-xl text-coffee-800 space-y-4 leading-relaxed article-content" set:html={post.content.rendered}></div>
+        </article>
+    </div>
 </Layout>
+
+<script>
+    import { setupIntersectionObserver } from '@/lib/animations';
+    document.addEventListener('astro:page-load', () => {
+        setupIntersectionObserver();
+    });
+    setupIntersectionObserver();
+</script>
