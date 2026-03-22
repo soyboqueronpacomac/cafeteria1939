@@ -1,46 +1,30 @@
 ---
-import { getWPPageBySlug } from '@/lib/wp';
-import Layout from '@/layouts/Layout.astro';
-import { ProcessPageSchema } from '@/types';
-import { inferRemoteSize } from 'astro:assets';
-import { Picture } from 'astro:assets';
+import Layout from '@/layouts/Layout.astro'
+import { getProcessPage } from '@/process/infrastructure/process.repository'
+import { inferRemoteSize, Picture } from 'astro:assets'
 
-const data = await getWPPageBySlug('proceso', ProcessPageSchema);
+const process = await getProcessPage()
 
-if (!data) {
-  return Astro.redirect('/404');
+if (!process) {
+  return Astro.redirect('/404')
 }
-const processKeys = Array.from({ length: 5}, (_, i) => `process_${i + 1}`)
-
-
-const title = data.title.rendered
-const subtitle = data.acf.subtitle
-const bgImage = data.featured_images?.full.url!
-const content = data.content.rendered
-
-
 ---
 
 <Layout
-  title={title}
-  subtitle={subtitle}
-  bgImage={bgImage}
+  title={process.title}
+  subtitle={process.subtitle}
+  bgImage={process.backgroundImage}
 >
-	<div class="opacity-0 text-xl text-coffee-800 space-y-3 mt-10 lg:mt-0 js-scroll-fade-right contenido-proceso" set:html={content}></div>
+  <div class="opacity-0 text-xl text-coffee-800 space-y-3 mt-10 lg:mt-0 js-scroll-fade-right contenido-proceso" set:html={process.content}></div>
   <section class="mt-10 space-y-10">
-    {processKeys.map(async (key, i) => {
-      const { title, description, image } = data.acf[key];
-      //Para obtener el width y height de la imagen
-      const { width, height } = await inferRemoteSize(image);
-      console.log(i);
-      
-      
+    {process.steps.map(async (step, i) => {
+      const { width, height } = await inferRemoteSize(step.imageUrl)
       return (
         <article class="flex flex-col lg:flex-row lg:items-center gap-10 bg-coffee-100 p-4 lg:p-10 rounded-lg shadow-2xl">
           <div class={`w-full lg:w-1/2 ${i % 2 === 0 ? 'lg:order-1' : 'lg:order-2'} opacity-0 js-scroll-fade-left`}>
             <Picture
-              src={image}
-              alt={`Imagen del proceso ${title}`}
+              src={step.imageUrl}
+              alt={`Imagen del proceso ${step.title}`}
               width={width}
               height={height}
               class="w-full h-auto rounded-lg object-cover shadow-2xl js-scroll-tilt"
@@ -48,8 +32,8 @@ const content = data.content.rendered
             />
           </div>
           <header class={`w-full lg:w-1/2 ${i % 2 === 0 ? 'lg:order-2' : 'lg:order-1'} opacity-0 js-scroll-fade-right`}>
-            <h3 class="text-coffee-900 font-black text-4xl pb-10 uppercase">{title}</h3>
-            <p class="text-lg text-coffee-700">{description}</p>
+            <h3 class="text-coffee-900 font-black text-4xl pb-10 uppercase">{step.title}</h3>
+            <p class="text-lg text-coffee-700">{step.description}</p>
           </header>
         </article>
       )
@@ -58,44 +42,15 @@ const content = data.content.rendered
 </Layout>
 
 <script>
-    document.addEventListener('astro:page-load', () => {
-        setupIntersectionObserver();
-    });
+  import { setupScrollReveal } from '@/shared/application/scroll-reveal.service'
 
-    // Run also on initial load if ViewTransitions are not used or for the first visit
-    setupIntersectionObserver();
+  let destroy: (() => void) | undefined
 
-    function setupIntersectionObserver() {
-        const observerOptions = {
-            root: null,
-            rootMargin: '0px',
-            threshold: 0.1
-        };
+  function init() {
+    destroy?.()
+    destroy = setupScrollReveal()
+  }
 
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    if (entry.target.classList.contains('js-scroll-fade-left')) {
-                        entry.target.classList.remove('opacity-0');
-                        entry.target.classList.add('animate-slide-in-left');
-                    }
-                    if (entry.target.classList.contains('js-scroll-fade-right')) {
-                        entry.target.classList.remove('opacity-0');
-                        entry.target.classList.add('animate-slide-in-right');
-                    }
-                    if (entry.target.classList.contains('js-scroll-fade-up')) {
-                        entry.target.classList.remove('opacity-0');
-                        entry.target.classList.add('animate-slide-in-up');
-                    }
-                } else {
-                    // Remove classes to re-trigger animation when scrolling back
-                    entry.target.classList.remove('animate-slide-in-left', 'animate-slide-in-right', 'animate-slide-in-up');
-                    entry.target.classList.add('opacity-0');
-                }
-            });
-        }, observerOptions);
-
-        const fadeElements = document.querySelectorAll('.js-scroll-fade-left, .js-scroll-fade-right, .js-scroll-fade-up');
-        fadeElements.forEach(el => observer.observe(el));
-    }
+  document.addEventListener('astro:page-load', init)
+  init()
 </script>
