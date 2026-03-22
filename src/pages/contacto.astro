@@ -1,23 +1,27 @@
 ---
-import { getWPPageBySlug } from '@/lib/wp';
-import Layout from '@/layouts/Layout.astro';
+import { z } from 'zod'
+import { fetchWPPage } from '@/shared/infrastructure/wp.client'
+import Layout from '@/layouts/Layout.astro'
 
-const data = await getWPPageBySlug('contacto');
+const imageSchema = z.object({ url: z.string(), width: z.number(), height: z.number() })
+const contactSchema = z.object({
+  title: z.object({ rendered: z.string() }),
+  acf: z.object({ subtitle: z.string() }),
+  featured_images: z.object({ full: imageSchema }).optional(),
+})
+
+const data = await fetchWPPage('contacto', contactSchema)
 
 if (!data) {
-  return Astro.redirect('/404');
+  return Astro.redirect('/404')
 }
-
-const title = data.title.rendered
-const subtitle = data.acf.subtitle
-const bgImage = data.featured_images?.full.url!
 ---
 
 <Layout
-  title={title}
-  subtitle={subtitle}
-  bgImage={bgImage}
+  title={data.title.rendered}
+  subtitle={data.acf.subtitle}
+  bgImage={data.featured_images?.full.url}
 >
-	<h1 class="text-4xl font-black text-coffee-500">{title}</h1>
-	<h2>{subtitle}</h2>
+  <h1 class="text-4xl font-black text-coffee-500">{data.title.rendered}</h1>
+  <h2>{data.acf.subtitle}</h2>
 </Layout>
