@@ -1,22 +1,51 @@
 ---
-import { getWPPageBySlug } from '@/lib/wp';
-import Layout from '@/layouts/Layout.astro';
+import Layout from '@/layouts/Layout.astro'
+import { getGalleryPage } from '@/gallery/infrastructure/gallery.repository'
+import GalleryImage from '@/gallery/ui/GalleryImage.astro'
 
-const data = await getWPPageBySlug('galeria');
+const gallery = await getGalleryPage()
 
-if (!data) {
-  return Astro.redirect('/404');
+if (!gallery) {
+  return Astro.redirect('/404')
 }
-
-const title = data.title.rendered
-const subtitle = data.acf.subtitle
-const bgImage = data.featured_images?.full.url!
 ---
 
 <Layout
-  title={title}
-  subtitle={subtitle}
-  bgImage={bgImage}
+  title={gallery.title}
+  subtitle={gallery.subtitle}
+  bgImage={gallery.backgroundImage}
 >
-	
+  <div id="gallery" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 mt-10">
+    {gallery.images.map((img, index) => (
+      <GalleryImage
+        src={img.large.url}
+        fullSrc={img.full.url}
+        width={img.large.width}
+        height={img.large.height}
+        fullWidth={img.full.width}
+        fullHeight={img.full.height}
+        alt={img.alt}
+        index={index}
+      />
+    ))}
+  </div>
 </Layout>
+
+<script>
+  import { createLightbox } from '@/gallery/application/lightbox.service'
+  import { setupScrollReveal } from '@/shared/application/scroll-reveal.service'
+
+  let destroyLightbox: (() => void) | undefined
+  let destroyReveal: (() => void) | undefined
+
+  function init() {
+    destroyLightbox?.()
+    destroyReveal?.()
+
+    destroyLightbox = createLightbox('#gallery')
+    destroyReveal = setupScrollReveal()
+  }
+
+  document.addEventListener('astro:page-load', init)
+  init()
+</script>
