@@ -1,0 +1,19 @@
+---
+import type { BlogCategory } from '../domain/blog.model'
+
+interface Props {
+  categories: BlogCategory[]
+}
+const { categories } = Astro.props
+---
+
+<div class="flex gap-2">
+  {categories.map(({ name, slug }) => (
+    <a
+      href={`/blog/categoria/${slug}`}
+      class="bg-coffee-100 text-coffee-700 text-xs px-2 py-1 rounded-full font-medium hover:bg-coffee-200 transition-colors uppercase"
+    >
+      {name}
+    </a>
+  ))}
+</div>

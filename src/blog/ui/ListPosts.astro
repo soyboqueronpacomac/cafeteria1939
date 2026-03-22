@@ -1,0 +1,21 @@
+---
+import type { BlogPost } from '../domain/blog.model'
+import CardPost from './CardPost.astro'
+
+interface Props {
+  title: string
+  posts: BlogPost[]
+}
+const { title, posts } = Astro.props
+---
+
+<section>
+  <h2 class="text-coffee-900 text-3xl lg:text-6xl font-black mt-10">{title}</h2>
+  <section class="mt-10 grid grid-cols-1 gap-10">
+    {posts.length > 0 ? (
+      posts.map(post => <CardPost post={post} />)
+    ) : (
+      <p class="text-coffee-700">No se encontraron artículos.</p>
+    )}
+  </section>
+</section>

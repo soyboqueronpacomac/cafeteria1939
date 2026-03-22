@@ -1,41 +1,35 @@
 ---
-import ListPosts from '@/components/post/ListPosts.astro';
-import { env } from '@/config/envs';
-import Layout from '@/layouts/Layout.astro';
-import { CategoriesSlugSchema, CategorySchema, PostsSchema } from '@/types';
+import Layout from '@/layouts/Layout.astro'
+import ListPosts from '@/blog/ui/ListPosts.astro'
+import { getAllCategorySlugs, getCategoryBySlug, getPostsByCategory } from '@/blog/infrastructure/blog.repository'
+
 export async function getStaticPaths() {
-    const res = await fetch(`${env.API_URL}/categories?_fields=slug`)
-    const json = await res.json()
-    const categories = CategoriesSlugSchema.parse(json)
-    return categories.map(({ slug }) => ({
-        params: { slug }
-    }))
+  const slugs = await getAllCategorySlugs()
+  return slugs.map(slug => ({ params: { slug } }))
 }
+
 const { slug } = Astro.params
-const categoryUrl = `${env.API_URL}/categories?slug=${slug}`
-const categoryRes = await fetch(categoryUrl)
-const categoryJson = await categoryRes.json()
-const { id: categoryId, name } = CategorySchema.parse(categoryJson[0])
-const postsUrl = `${env.API_URL}/posts?categories=${categoryId}&_embed&t=${Date.now()}`
-const postsRes = await fetch(postsUrl, { cache: 'no-store' })
-const postsJson = await postsRes.json()
-const posts = PostsSchema.parse(postsJson)
-
-
-
+const category = await getCategoryBySlug(slug)
+const posts = await getPostsByCategory(category.id!)
 ---
-<Layout 
-    title={`Categoría: ${name}`}
-    subtitle={`Posts relacionados con la categoría ${name}`}
-    bgImage={posts?.[0]?.featured_images?.full?.url!}
+<Layout
+  title={`Categoría: ${category.name}`}
+  subtitle={`Posts relacionados con la categoría ${category.name}`}
+  bgImage={posts[0]?.featuredImage?.full.url}
 >
- <ListPosts title={`Posts relacionados con la categoría ${name}`} posts={posts} />
+  <ListPosts title={`Posts relacionados con la categoría ${category.name}`} posts={posts} />
 </Layout>
 
 <script>
-    import { setupIntersectionObserver } from '@/lib/animations';
-    document.addEventListener('astro:page-load', () => {
-        setupIntersectionObserver();
-    });
-    setupIntersectionObserver();
+  import { setupScrollReveal } from '@/shared/application/scroll-reveal.service'
+
+  let destroy: (() => void) | undefined
+
+  function init() {
+    destroy?.()
+    destroy = setupScrollReveal()
+  }
+
+  document.addEventListener('astro:page-load', init)
+  init()
 </script>

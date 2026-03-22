@@ -1,34 +1,35 @@
 ---
-import { getWPPageBySlug, getWPPosts } from '@/lib/wp';
-import ListPosts from '@/components/post/ListPosts.astro';
-import Layout from '@/layouts/Layout.astro';
+import { getBlogPage, getAllPosts } from '@/blog/infrastructure/blog.repository'
+import ListPosts from '@/blog/ui/ListPosts.astro'
+import Layout from '@/layouts/Layout.astro'
 
-const data = await getWPPageBySlug('blog');
-const posts = await getWPPosts();
+const blog = await getBlogPage()
+const posts = await getAllPosts()
 
-if (!data) {
-  return Astro.redirect('/404');
+if (!blog) {
+  return Astro.redirect('/404')
 }
-
-const title = data.title.rendered
-const subtitle = data.acf.subtitle
-const bgImage = data.featured_images?.full.url!
-const content = data.content.rendered
 ---
 
 <Layout
-  title={title}
-  subtitle={subtitle}
-  bgImage={bgImage}
+  title={blog.title}
+  subtitle={blog.subtitle}
+  bgImage={blog.backgroundImage}
 >
-	<div class="text-xl text-coffee-800 space-y-3 mt-10 lg:mt-0 opacity-0 js-scroll-fade-up" set:html={content}></div>
-    <ListPosts title='Todos los post del blog' posts={posts}/>
+  <div class="text-xl text-coffee-800 space-y-3 mt-10 lg:mt-0 opacity-0 js-scroll-fade-up" set:html={blog.content}></div>
+  <ListPosts title="Todos los post del blog" posts={posts} />
 </Layout>
 
 <script>
-    import { setupIntersectionObserver } from '@/lib/animations';
-    document.addEventListener('astro:page-load', () => {
-        setupIntersectionObserver();
-    });
-    setupIntersectionObserver();
+  import { setupScrollReveal } from '@/shared/application/scroll-reveal.service'
+
+  let destroy: (() => void) | undefined
+
+  function init() {
+    destroy?.()
+    destroy = setupScrollReveal()
+  }
+
+  document.addEventListener('astro:page-load', init)
+  init()
 </script>

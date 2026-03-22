@@ -1,0 +1,20 @@
+---
+import { Picture } from 'astro:assets'
+
+interface Props {
+  src: string
+  alt: string
+  width: number
+  height: number
+}
+const { src, alt, width, height } = Astro.props
+---
+
+<Picture
+  src={src}
+  alt={alt}
+  width={width}
+  height={height}
+  class="w-full h-auto object-cover rounded-lg group-hover:scale-105 transition-transform duration-300"
+  formats={['avif', 'webp', 'jpeg']}
+/>

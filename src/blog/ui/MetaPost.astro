@@ -1,0 +1,9 @@
+---
+import { formatDate } from '../application/date-formatter.service'
+
+interface Props {
+  date: string
+}
+const { date } = Astro.props
+---
+<p class="text-coffee-500 text-sm font-semibold">{formatDate(date)}</p>
