@@ -1,35 +1,34 @@
 ---
-import { getWPPageBySlug } from '../lib/wp';
-import LIstIcons from '@/components/home/LIstIcons.astro';
-import Layout from '../layouts/Layout.astro';
+import { getHomePage } from '@/home/infrastructure/home.repository'
+import ListIcons from '@/home/ui/ListIcons.astro'
+import Layout from '@/layouts/Layout.astro'
 
-const data = await getWPPageBySlug('inicio');
+const home = await getHomePage()
 
-if (!data) {
-  return Astro.redirect('/404');
+if (!home) {
+  return Astro.redirect('/404')
 }
-
-const title = data.title.rendered
-const subtitle = data.acf.subtitle
-const bgImage = data.featured_images?.full.url!
-const content = data.content.rendered
 ---
 
 <Layout
-  title={title}
-  subtitle={subtitle}
-  bgImage={bgImage}
+  title={home.title}
+  subtitle={home.subtitle}
+  bgImage={home.backgroundImage}
 >
-	<div class="space-y-4 text-center text-coffee-800 text-lg mt-10 opacity-0 js-scroll-fade-up" set:html={content}></div>
-	<LIstIcons />
-
+  <div class="space-y-4 text-center text-coffee-800 text-lg mt-10 opacity-0 js-scroll-fade-up" set:html={home.content}></div>
+  <ListIcons />
 </Layout>
 
 <script>
-    import { setupIntersectionObserver } from '@/lib/animations';
-    document.addEventListener('astro:page-load', () => {
-        setupIntersectionObserver();
-    });
+  import { setupScrollReveal } from '@/shared/application/scroll-reveal.service'
 
-    setupIntersectionObserver();
+  let destroy: (() => void) | undefined
+
+  function init() {
+    destroy?.()
+    destroy = setupScrollReveal()
+  }
+
+  document.addEventListener('astro:page-load', init)
+  init()
 </script>
