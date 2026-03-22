@@ -1,27 +1,40 @@
 ---
-import { getWPPageBySlug } from '@/lib/wp';
-import Layout from '@/layouts/Layout.astro';
-import Aboutcontent from '@/components/nosotros/Aboutcontent.astro';
+import { getAboutPage } from '@/about/infrastructure/about.repository'
+import AboutContent from '@/about/ui/AboutContent.astro'
+import Layout from '@/layouts/Layout.astro'
 
-const data = await getWPPageBySlug('nosotros');
+const about = await getAboutPage()
 
-if (!data) {
-  return Astro.redirect('/404');
+if (!about) {
+  return Astro.redirect('/404')
 }
-
-const title = data.title.rendered
-const subtitle = data.acf.subtitle
-const bgImage = data.featured_images?.full.url!
-const image = data.featured_images?.medium_large.url!
-const content = data.content.rendered
-const width = data.featured_images?.medium_large.width!
-const height = data.featured_images?.medium_large.height!
 ---
 
 <Layout
-  title={title}
-  subtitle={subtitle}
-  bgImage={bgImage}
+  title={about.title}
+  subtitle={about.subtitle}
+  bgImage={about.backgroundImage}
 >
-	<Aboutcontent content={content} image={image} width={width} height={height} />
+  {about.image && (
+    <AboutContent
+      content={about.content}
+      image={about.image.url}
+      width={about.image.width}
+      height={about.image.height}
+    />
+  )}
 </Layout>
+
+<script>
+  import { setupScrollReveal } from '@/shared/application/scroll-reveal.service'
+
+  let destroy: (() => void) | undefined
+
+  function init() {
+    destroy?.()
+    destroy = setupScrollReveal()
+  }
+
+  document.addEventListener('astro:page-load', init)
+  init()
+</script>
