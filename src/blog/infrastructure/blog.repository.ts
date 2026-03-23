@@ -1,5 +1,5 @@
 import { z } from 'zod'
-import { env } from '@/config/envs'
+import { fetchWPPage, fetchWPCollection, fetchWPSingle } from '@/shared/infrastructure/wp.client'
 import type { BlogPost, BlogPage, BlogCategory } from '../domain/blog.model'
 
 const imageSchema = z.object({
@@ -30,8 +30,6 @@ const postResponseSchema = z.object({
   category_details: z.array(categorySchema).optional(),
 })
 
-const postsResponseSchema = z.array(postResponseSchema)
-
 const blogPageSchema = z.object({
   title: z.object({ rendered: z.string() }),
   content: z.object({ rendered: z.string() }),
@@ -56,81 +54,39 @@ function mapPost(raw: z.infer<typeof postResponseSchema>): BlogPost {
 }
 
 export async function getBlogPage(): Promise<BlogPage | null> {
-  const { API_URL } = env
-  const url = `${API_URL}/pages?slug=blog&_embed&t=${Date.now()}`
+  const data = await fetchWPPage('blog', blogPageSchema)
+  if (!data) return null
 
-  try {
-    const res = await fetch(url, { cache: 'no-store' })
-    if (!res.ok) throw new Error(`Failed to fetch blog page. Status: ${res.status}`)
-    const json = await res.json()
-    if (!json || json.length === 0) return null
-
-    const data = blogPageSchema.parse(json[0])
-    return {
-      title: data.title.rendered,
-      subtitle: data.acf.subtitle,
-      backgroundImage: data.featured_images?.full.url,
-      content: data.content.rendered,
-    }
-  } catch (error) {
-    console.error('Error fetching blog page:', error)
-    throw error
+  return {
+    title: data.title.rendered,
+    subtitle: data.acf.subtitle,
+    backgroundImage: data.featured_images?.full.url,
+    content: data.content.rendered,
   }
 }
 
 export async function getAllPosts(): Promise<BlogPost[]> {
-  const { API_URL } = env
-  const url = `${API_URL}/posts?_embed&t=${Date.now()}`
-
-  try {
-    const res = await fetch(url, { cache: 'no-store' })
-    if (!res.ok) throw new Error(`Failed to fetch posts. Status: ${res.status}`)
-    const json = await res.json()
-    if (!json || json.length === 0) return []
-
-    return postsResponseSchema.parse(json).map(mapPost)
-  } catch (error) {
-    console.error('Error fetching posts:', error)
-    throw error
-  }
+  const data = await fetchWPCollection('posts', postResponseSchema, '_embed')
+  return data.map(mapPost)
 }
 
 export async function getPostBySlug(slug: string): Promise<BlogPost | null> {
-  const { API_URL } = env
-  const url = `${API_URL}/posts?slug=${slug}&_embed&t=${Date.now()}`
-
-  try {
-    const res = await fetch(url, { cache: 'no-store' })
-    if (!res.ok) throw new Error(`Failed to fetch post: ${slug}. Status: ${res.status}`)
-    const json = await res.json()
-    if (!json || json.length === 0) return null
-
-    return mapPost(postResponseSchema.parse(json[0]))
-  } catch (error) {
-    console.error(`Error fetching post [${slug}]:`, error)
-    throw error
-  }
+  const data = await fetchWPSingle('posts', postResponseSchema, `slug=${slug}&_embed`)
+  if (!data) return null
+  return mapPost(data)
 }
 
 export async function getAllCategorySlugs(): Promise<string[]> {
-  const { API_URL } = env
-  const res = await fetch(`${API_URL}/categories?_fields=slug`)
-  const json = await res.json()
-  return z.array(z.object({ slug: z.string() })).parse(json).map(c => c.slug)
+  const data = await fetchWPCollection('categories', z.object({ slug: z.string() }), '_fields=slug')
+  return data.map(c => c.slug)
 }
 
-export async function getCategoryBySlug(slug: string): Promise<BlogCategory> {
-  const { API_URL } = env
-  const res = await fetch(`${API_URL}/categories?slug=${slug}`)
-  const json = await res.json()
-  return categorySchema.parse(json[0])
+export async function getCategoryBySlug(slug: string): Promise<BlogCategory | null> {
+  const data = await fetchWPSingle('categories', categorySchema, `slug=${slug}`)
+  return data
 }
 
 export async function getPostsByCategory(categoryId: number): Promise<BlogPost[]> {
-  const { API_URL } = env
-  const url = `${API_URL}/posts?categories=${categoryId}&_embed&t=${Date.now()}`
-  const res = await fetch(url, { cache: 'no-store' })
-  const json = await res.json()
-  if (!json || json.length === 0) return []
-  return postsResponseSchema.parse(json).map(mapPost)
+  const data = await fetchWPCollection('posts', postResponseSchema, `categories=${categoryId}&_embed`)
+  return data.map(mapPost)
 }
