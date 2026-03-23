@@ -1,5 +1,5 @@
 import { z } from 'zod'
-import { env } from '@/config/envs'
+import { fetchWPPage } from '@/shared/infrastructure/wp.client'
 import type { GalleryPage } from '../domain/gallery.model'
 
 const imageSchema = z.object({
@@ -8,45 +8,30 @@ const imageSchema = z.object({
   height: z.number(),
 })
 
-const galleryItemSchema = z.object({
-  large: imageSchema,
-  full: imageSchema,
-})
-
 const galleryResponseSchema = z.object({
   title: z.object({ rendered: z.string() }),
   acf: z.object({ subtitle: z.string() }),
   featured_images: z.object({
     full: imageSchema,
   }).optional(),
-  gallery: z.array(galleryItemSchema),
+  gallery: z.array(z.object({
+    large: imageSchema,
+    full: imageSchema,
+  })),
 })
 
 export async function getGalleryPage(): Promise<GalleryPage | null> {
-  const { API_URL } = env
-  const url = `${API_URL}/pages?slug=galeria&_embed&t=${Date.now()}`
+  const data = await fetchWPPage('galeria', galleryResponseSchema)
+  if (!data) return null
 
-  try {
-    const res = await fetch(url, { cache: 'no-store' })
-    if (!res.ok) throw new Error(`Failed to fetch gallery. Status: ${res.status}`)
-
-    const json = await res.json()
-    if (!json || json.length === 0) return null
-
-    const data = galleryResponseSchema.parse(json[0])
-
-    return {
-      title: data.title.rendered,
-      subtitle: data.acf.subtitle,
-      backgroundImage: data.featured_images?.full.url,
-      images: data.gallery.map(img => ({
-        large: img.large,
-        full: img.full,
-        alt: `Imagen de Cafetería 1939`,
-      })),
-    }
-  } catch (error) {
-    console.error('Error fetching gallery page:', error)
-    throw error
+  return {
+    title: data.title.rendered,
+    subtitle: data.acf.subtitle,
+    backgroundImage: data.featured_images?.full.url,
+    images: data.gallery.map(img => ({
+      large: img.large,
+      full: img.full,
+      alt: 'Imagen de Cafetería 1939',
+    })),
   }
 }
