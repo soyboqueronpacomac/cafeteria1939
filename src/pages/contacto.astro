@@ -1,27 +1,19 @@
 ---
-import { z } from 'zod'
-import { fetchWPPage } from '@/shared/infrastructure/wp.client'
+import { getContactPage } from '@/contact/infrastructure/contact.repository'
 import Layout from '@/layouts/Layout.astro'
 
-const imageSchema = z.object({ url: z.string(), width: z.number(), height: z.number() })
-const contactSchema = z.object({
-  title: z.object({ rendered: z.string() }),
-  acf: z.object({ subtitle: z.string() }),
-  featured_images: z.object({ full: imageSchema }).optional(),
-})
+const contact = await getContactPage()
 
-const data = await fetchWPPage('contacto', contactSchema)
-
-if (!data) {
+if (!contact) {
   return Astro.redirect('/404')
 }
 ---
 
 <Layout
-  title={data.title.rendered}
-  subtitle={data.acf.subtitle}
-  bgImage={data.featured_images?.full.url}
+  title={contact.title}
+  subtitle={contact.subtitle}
+  bgImage={contact.backgroundImage ?? ''}
 >
-  <h1 class="text-4xl font-black text-coffee-500">{data.title.rendered}</h1>
-  <h2>{data.acf.subtitle}</h2>
+  <h1 class="text-4xl font-black text-coffee-500">{contact.title}</h1>
+  <h2>{contact.subtitle}</h2>
 </Layout>
