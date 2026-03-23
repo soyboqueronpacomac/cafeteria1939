@@ -1,27 +1,42 @@
 ---
-import { z } from 'zod'
-import { fetchWPPage } from '@/shared/infrastructure/wp.client'
+import { getMenuPage } from '@/menu/infrastructure/menu.repository'
+import AboutContent from '@/about/ui/AboutContent.astro'
 import Layout from '@/layouts/Layout.astro'
+import ProductsMenu from '@/menu/ui/ProductsMenu.astro'
 
-const imageSchema = z.object({ url: z.string(), width: z.number(), height: z.number() })
-const menuSchema = z.object({
-  title: z.object({ rendered: z.string() }),
-  acf: z.object({ subtitle: z.string() }),
-  featured_images: z.object({ full: imageSchema }).optional(),
-})
+const menu = await getMenuPage()
 
-const data = await fetchWPPage('menu', menuSchema)
-
-if (!data) {
+if (!menu) {
   return Astro.redirect('/404')
 }
 ---
 
 <Layout
-  title={data.title.rendered}
-  subtitle={data.acf.subtitle}
-  bgImage={data.featured_images?.full.url}
+  title={menu.title}
+  subtitle={menu.subtitle}
+  bgImage={menu.backgroundImage ?? ''}
 >
-  <h1 class="text-4xl font-black text-coffee-500">{data.title.rendered}</h1>
-  <h2>{data.acf.subtitle}</h2>
+  {menu.image && (
+    <AboutContent
+      content={menu.content}
+      image={menu.image.url}
+      width={menu.image.width}
+      height={menu.image.height}
+    />
+  )}
+  <ProductsMenu slot='after-main-content' />
 </Layout>
+
+<script>
+  import { setupScrollReveal } from '@/shared/application/scroll-reveal.service'
+
+  let destroy: (() => void) | undefined
+
+  function init() {
+    destroy?.()
+    destroy = setupScrollReveal()
+  }
+
+  document.addEventListener('astro:page-load', init)
+  init()
+</script>

@@ -1,0 +1,14 @@
+---
+import CoffeeMenu from "./CoffeeMenu.astro";
+import FoodMenu from "./FoodMenu.astro";
+import { getMenuProducts } from '@/menu/infrastructure/menu.repository'
+
+const [coffeeItems, foodItems] = await Promise.all([
+  getMenuProducts(6),
+  getMenuProducts(7),
+])
+---
+<section class="grid grid-cols-1 lg:grid-cols-2 gap-5 mt-10">
+    <CoffeeMenu items={coffeeItems} />
+    <FoodMenu items={foodItems} />
+</section>

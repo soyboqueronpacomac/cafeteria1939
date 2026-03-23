@@ -1,0 +1,18 @@
+---
+import MenuItem from "./MenuItem.astro";
+import type { MenuItem as MenuItemType } from '@/menu/domain/menu.model'
+
+interface Props {
+  items: MenuItemType[]
+}
+
+const { items } = Astro.props
+---
+<div>
+    <h4 class="text-white font-black text-4xl uppercase text-center my-10">Café</h4>
+    {
+        items.map(item => (
+            <MenuItem item={item} />
+        ))
+    }
+</div>
