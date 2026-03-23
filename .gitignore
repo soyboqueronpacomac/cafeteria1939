@@ -23,3 +23,5 @@ pnpm-debug.log*
 # jetbrains setting folder
 .idea/
 .env.development
+.github/copilot-instructions.md
+.vscode/settings.json
