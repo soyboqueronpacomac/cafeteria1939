@@ -1,12 +1,8 @@
-export interface GalleryImage {
-  url: string
-  width: number
-  height: number
-}
+import type { WPImage } from '@/shared/domain/wp.model'
 
 export interface GalleryItem {
-  large: GalleryImage
-  full: GalleryImage
+  large: WPImage
+  full: WPImage
   alt: string
 }
 

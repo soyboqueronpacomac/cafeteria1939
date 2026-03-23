@@ -1,3 +1,5 @@
+import type { WPImage } from '@/shared/domain/wp.model'
+
 export interface BlogCategory {
   id?: number
   name: string
@@ -13,8 +15,8 @@ export interface BlogPost {
   excerpt: string
   categories: BlogCategory[]
   featuredImage?: {
-    full: { url: string; width: number; height: number }
-    mediumLarge: { url: string; width: number; height: number }
+    full: WPImage
+    mediumLarge: WPImage
   }
 }
 
