@@ -11,14 +11,22 @@ const { item } = Astro.props
   <div class="flex-1 flex flex-col md:flex-row gap-5 items-center ">
     <div class="w-full md:w-40 lg:w-56 overflow-hidden">
         {item.image && (
-            <Picture
-                src={item.image.url}
-                alt={item.title}
-                width={item.image.width}
-                height={item.image.height}
-                class="w-full h-auto object-cover rounded-lg"
-                formats={['avif', 'webp', 'jpeg']}
-            />
+            <a 
+              href={item.image.url} 
+              data-pswp-width={item.image.width} 
+              data-pswp-height={item.image.height} 
+              target="_blank"
+              class="cursor-zoom-in block"
+            >
+              <Picture
+                  src={item.image.url}
+                  alt={item.title}
+                  width={item.image.width}
+                  height={item.image.height}
+                  class="w-full h-auto object-cover rounded-lg"
+                  formats={['avif', 'webp', 'jpeg']}
+              />
+            </a>
         )}
     </div>
     <div class="flex-1">

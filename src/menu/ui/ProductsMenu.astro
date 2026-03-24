@@ -6,7 +6,7 @@ import ListMenu from "./ListMenu.astro";
 
 ---
 <section class="bg-coffee-800 -mt-40 pt-52 pb-10">
-    <div class="max-w-7xl mx-auto bg-menu-image bg-no-repeat bg-contain bg-[center_80px] pt-[150px] lg:pt-[250px] pb-40">
+    <div id="menu-gallery-products" class="max-w-7xl mx-auto bg-menu-image bg-no-repeat bg-contain bg-[center_80px] pt-[150px] lg:pt-[250px] pb-40">
         <h3 class="text-white font-black text-center text-xl pb-4 uppercase">
             Nuestro Delicioso
             <span class="text-4xl block">Menú</span>
@@ -14,3 +14,12 @@ import ListMenu from "./ListMenu.astro";
         <ListMenu />
     </div>
 </section>
+
+<script>
+    import { createLightbox } from "@/gallery/application/lightbox.service";
+
+    document.addEventListener('astro:page-load', () => {
+        const cleanup = createLightbox('#menu-gallery-products');
+        document.addEventListener('astro:before-preparation', cleanup, { once: true });
+    });
+</script>

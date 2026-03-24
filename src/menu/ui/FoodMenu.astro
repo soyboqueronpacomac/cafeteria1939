@@ -8,7 +8,7 @@ interface Props {
 
 const { items } = Astro.props
 ---
-<div>
+<div id="menu-gallery-food">
     <h4 class="text-white font-black text-4xl uppercase text-center my-10">Comida</h4>
     {
         items.map(item => (
@@ -16,3 +16,12 @@ const { items } = Astro.props
         ))
     }
 </div>
+
+<script>
+    import { createLightbox } from "@/gallery/application/lightbox.service";
+
+    document.addEventListener('astro:page-load', () => {
+        const cleanup = createLightbox('#menu-gallery-food');
+        document.addEventListener('astro:before-preparation', cleanup, { once: true });
+    });
+</script>
