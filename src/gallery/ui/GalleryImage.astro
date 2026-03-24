@@ -10,14 +10,15 @@ interface Props {
   fullHeight: number
   alt: string
   index?: number
+  class?: string
 }
 
-const { src, fullSrc, width, height, fullWidth, fullHeight, alt, index = 0 } = Astro.props
+const { src, fullSrc, width, height, fullWidth, fullHeight, alt, index = 0, class: className } = Astro.props
 const maxDelay = Math.min(index * 100, 800)
 ---
 
 <div
-  class="opacity-0 js-scroll-fade-up rounded-lg overflow-hidden shadow-xl vintage-vignette group"
+  class={`relative opacity-0 js-scroll-fade-up rounded-lg overflow-hidden shadow-xl vintage-vignette group ${className}`}
   style={`transition-delay: ${maxDelay}ms`}
 >
   <a
@@ -25,12 +26,12 @@ const maxDelay = Math.min(index * 100, 800)
     data-pswp-width={fullWidth}
     data-pswp-height={fullHeight}
     target="_blank"
-    class="block h-full"
+    class="block w-full h-full"
   >
     <Picture
       src={src}
       alt={alt}
-      class="w-full h-80 object-cover transition-transform duration-500 group-hover:scale-110"
+      class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
       width={width}
       height={height}
       formats={['avif', 'webp', 'jpeg']}

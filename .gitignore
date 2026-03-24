@@ -25,3 +25,4 @@ pnpm-debug.log*
 .env.development
 .github/copilot-instructions.md
 .vscode/settings.json
+.atl/

@@ -1,10 +1,15 @@
 ---
 import { getHomePage } from '@/home/infrastructure/home.repository'
+import { getGalleryPage } from '@/gallery/infrastructure/gallery.repository'
 import ListIcons from '@/home/ui/ListIcons.astro'
 import Layout from '@/layouts/Layout.astro'
 import ProductsMenu from '@/menu/ui/ProductsMenu.astro'
+import ListGallery from '@/gallery/ui/ListGallery.astro'
 
-const home = await getHomePage()
+const [home, gallery] = await Promise.all([
+  getHomePage(),
+  getGalleryPage()
+])
 
 if (!home) {
   return Astro.redirect('/404')
@@ -18,6 +23,14 @@ if (!home) {
 >
   <div class="space-y-4 text-center text-coffee-800 text-lg mt-10 opacity-0 js-scroll-fade-up" set:html={home.content}></div>
   <ListIcons />
+  <div class="mt-20">
+    <h2 class="text-4xl font-bold text-center text-coffee-900 mb-2">Nuestra Galería</h2>
+    <p class="text-center text-coffee-700 italic mb-10">Un vistazo a lo mejor de nosotros</p>
+    <ListGallery id="gallery-home" images={gallery?.images.slice(0, 6) || []} />
+    <div class="text-center mt-10">
+      <a href="/galeria" class="inline-block px-8 py-3 bg-coffee-800 text-white rounded-full hover:bg-coffee-900 transition-colors uppercase tracking-widest text-sm font-bold">Ver toda la galería</a>
+    </div>
+  </div>
   <ProductsMenu slot='after-main-content' />
 </Layout>
 

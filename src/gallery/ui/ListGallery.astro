@@ -1,0 +1,62 @@
+---
+import GalleryImage from '@/gallery/ui/GalleryImage.astro'
+import type { GalleryItem } from '@/gallery/domain/gallery.model'
+
+interface Props {
+  id?: string
+  images: GalleryItem[]
+}
+
+const { id = 'gallery', images } = Astro.props
+
+const getSpan = (index: number) => {
+  const mod = index % 7
+  if (mod === 0) return 'lg:col-span-4 lg:row-span-4' // Big square/rectangle
+  if (mod === 3) return 'lg:col-span-2 lg:row-span-4' // Tall portrait
+  if (mod === 6) return 'lg:col-span-4 lg:row-span-2' // Wide landscape
+  return 'lg:col-span-2 lg:row-span-2' // Small square
+}
+---
+
+<div id={id} class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 lg:auto-rows-[100px] gap-8 mt-10">
+  {
+    images.map((img, index) => (
+      <GalleryImage
+        src={img.large.url}
+        fullSrc={img.full.url}
+        width={img.large.width}
+        height={img.large.height}
+        fullWidth={img.full.width}
+        fullHeight={img.full.height}
+        alt={img.alt}
+        index={index}
+        class={getSpan(index)}
+      />
+    ))
+  }
+</div>
+
+<script>
+  import { createLightbox } from '@/gallery/application/lightbox.service'
+  import { setupScrollReveal } from '@/shared/application/scroll-reveal.service'
+
+  let destroyLightbox: (() => void) | undefined
+  let destroyReveal: (() => void) | undefined
+
+  function init() {
+    destroyLightbox?.()
+    destroyReveal?.()
+
+    // Initialize all galleries that start with 'gallery' or use a data-gallery attribute
+    const galleries = document.querySelectorAll('[id^="gallery"]')
+    
+    galleries.forEach((gallery) => {
+      destroyLightbox = createLightbox(`#${gallery.id}`)
+    })
+    
+    destroyReveal = setupScrollReveal()
+  }
+
+  document.addEventListener('astro:page-load', init)
+  init()
+</script>
